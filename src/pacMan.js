@@ -1,12 +1,18 @@
 class Player {
-  #avatar
-  #board
-  #directions
-  #position
+  #avatar;
+  #board;
+  #directions;
+  #position;
+  #score;
+  #length;
+  #breadth;
 
-  constructor(board) {
+  constructor(board, avatar) {
+    this.#length = board.length - 1;
+    this.#breadth = board.breadth - 1;
+    this.#score = 0;
     this.#board = board;
-    this.#avatar = '🐼';
+    this.#avatar = avatar;
     this.#position = { row: 4, column: 4 };
 
     this.#directions = {
@@ -19,26 +25,11 @@ class Player {
     this.#board.update({ ...this.#position }, this.#avatar);
   }
 
-  #isColide({ row, column }) {
-    return row > 9 || row < 0 || column < 0 || column > 9;
-  }
-
-  #colide(direction) {
+  #isColide(direction) {
     let tempPosition = { ...this.#position };
     this.#directions[direction](tempPosition);
-
-    const oppositeDirection = {
-      right: 'left',
-      left: 'right',
-      up: 'down',
-      down: 'up'
-    };
-
-    if (this.#isColide(tempPosition)) {
-      return { hasColide: true, direction: oppositeDirection[direction] }
-    }
-
-    return { hasColide: false, direction }
+    const { row, column } = tempPosition
+    return row > this.#length || row < 0 || column < 0 || column > this.#breadth;
   }
 
   #right(position) {
@@ -58,10 +49,11 @@ class Player {
   }
 
   move(direction) {
-    this.#board.update({ ...this.#position }, '--');
-    const { hasColide, direction: colideDirection } = this.#colide(direction);
+    this.#board.update({ ...this.#position }, '  ');
 
-    if (hasColide) {
+    if (this.#isColide(direction)) {
+      this.#board.update({ ...this.#position }, this.#avatar);
+      return
       direction = colideDirection;
     }
 
@@ -69,9 +61,21 @@ class Player {
     this.#board.update({ ...this.#position }, this.#avatar);
   }
 
-  // eat() {
+  #hasEaten(foodLocation) {
+    const { row: foodRow, column: foodColumn } = foodLocation;
+    const { row: avatarRow, column: avatarColumn } = this.#position;
+    return foodRow === avatarRow && foodColumn === avatarColumn;
+  }
 
-  // }
+  updateScore(foodLocation) {
+    if (this.#hasEaten(foodLocation)) {
+      this.#score += 1;
+    }
+  }
+
+  get score() {
+    return this.#score;
+  }
 
 }
 

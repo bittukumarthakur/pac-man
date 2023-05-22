@@ -1,15 +1,18 @@
 class Board {
   #size
   #board
+  #length
+  #breadth
 
-  constructor(size) {
-    this.#size = size;
+  constructor(length, breadth) {
+    this.#length = length;
+    this.#breadth = breadth;
     this.#board = this.#createBoard(this.#size);
   }
 
-  #createBoard(size) {
-    const line = new Array(size).fill([]);
-    return line.map(() => [...new Array(size).fill('--')]);
+  #createBoard() {
+    const line = new Array(this.#length).fill([]);
+    return line.map(() => [...new Array(this.#breadth).fill('  ')]);
   }
 
   update({ row, column }, symbol) {
@@ -17,7 +20,17 @@ class Board {
   }
 
   toString() {
-    return this.#board.map((line) => line.join('')).join('\n');
+    const borderBreadth = (this.#breadth + 2) * 2;
+    const border = new Array(borderBreadth).fill('🀰').join('');
+    return border.concat('\n', this.#board.map((line) => '█ '.concat(line.join(''), ' █')).join('\n'), '\n', border);
+  }
+
+  get length() {
+    return this.#length;
+  }
+
+  get breadth() {
+    return this.#breadth;
   }
 }
 
